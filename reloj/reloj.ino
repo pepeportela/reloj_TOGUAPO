@@ -17,8 +17,22 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 #define SERVOMIN  150 // this is the 'minimum' pulse length count (out of 4096)
 #define SERVOMAX  600 // this is the 'maximum' pulse length count (out of 4096)
 
-// our servo # counter
-uint8_t servonum = 0;
+// Declaración de cada pieza
+// PCA2
+uint8_t a1 = 0;
+uint8_t b1 = 1;
+uint8_t c1 = 2;
+uint8_t d1 = 3;
+uint8_t e1 = 4;
+uint8_t f1 = 5;
+uint8_t g1 = 6;
+uint8_t a2 = 8;
+uint8_t b2 = 9;
+uint8_t c2 = 10;
+uint8_t d2 = 11;
+uint8_t e2 = 12;
+uint8_t f2 = 13;
+uint8_t g2 = 14;
 
 void setup() {
   Serial.begin(9600);
@@ -47,6 +61,12 @@ void setServoPulse(uint8_t n, double pulse) {
   pwm.setPWM(n, 0, pulse);
 }
 
+void animacion(){
+  desactivar_todo();
+  }
+
+void desactivar_todo(){
+  }
 void loop() {
   // Drive each servo one at a time
   Serial.println(servonum);
