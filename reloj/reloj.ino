@@ -41,6 +41,8 @@ const char charl[7] = "1010010";
 // Declaración de cada pieza
 // PCA1 - Horas
 // ----------- Decimales
+uint8_t hora_dec[7] = {0,1,2,3,4,5,6};
+
 uint8_t a1 = 0;
 uint8_t b1 = 1;
 uint8_t c1 = 2;
@@ -49,6 +51,7 @@ uint8_t e1 = 4;
 uint8_t f1 = 5;
 uint8_t g1 = 6;
 // ----------- Unidades 
+
 uint8_t a2 = 8;
 uint8_t b2 = 9;
 uint8_t c2 = 10;
@@ -59,6 +62,8 @@ uint8_t g2 = 14;
 
 // PCA2 - Minutos
 // ----------- Decimales
+uint8_t minuto_dec[7] = {0,1,2,3,4,5,6};
+
 uint8_t a3 = 0;
 uint8_t b3 = 1;
 uint8_t c3 = 2;
@@ -77,12 +82,12 @@ uint8_t g4 = 14;
 
 void setup() {
   Serial.begin(9600);
-  Serial.println("8 channel Servo test!");
 
   pwm.begin();
   
   pwm.setPWMFreq(60);  // Analog servos run at ~60 Hz updates
 
+  pinMode(2,INPUT);
   animacion();
 }
 
@@ -111,7 +116,7 @@ void animacion(){
   delay(700);
   hora_unidad(char0);
   delay(700);
-  minuto_decena(charl);
+  poner_char(minuto_dec,charl);
   delay(700);
   minuto_unidad(chara);
   delay(2000);
@@ -126,7 +131,7 @@ void cafe(){
   delay(700);
   hora_unidad(chara);
   delay(700);
-  minuto_decena(charf);
+  poner_char(minuto_dec,charf);
   delay(700);
   minuto_unidad(chare);
   delay(2000);
@@ -156,83 +161,66 @@ void activar_todo(){
 
 void loop() {
 
-  desactivar_todo();
+  activar_todo();
   delay(1000);
-  minuto_decena(char9);
+  poner_char(minuto_dec,char9);
   delay(1000);
-  minuto_decena(char8);
+  poner_char(minuto_dec,char8);
   delay(1000);
-  minuto_decena(char7);
+  poner_char(minuto_dec,char7);
   delay(1000);
-  minuto_decena(char6);
+  poner_char(minuto_dec,char6);
   delay(1000);
-  minuto_decena(char5);
+  poner_char(minuto_dec,char5);
   delay(1000);
-  minuto_decena(char4);
+  poner_char(minuto_dec,char4);
   delay(1000);
-  minuto_decena(char3);
+  poner_char(minuto_dec,char3);
   delay(1000);
-  minuto_decena(char2);
+  poner_char(minuto_dec,char2);
   delay(1000);
-  minuto_decena(char1);
+  poner_char(minuto_dec,char1);
   delay(1000);
-  minuto_decena(char0);
+  poner_char(minuto_dec,char0);
   delay(1000);
   
   activar_todo();
-  delay(60000);
+  for (int i=0;i<60;i++){
+    if (digitalRead(2)==LOW){
+      animacion();
+    }
+    else{
+      activar_todo();
+      delay(1000);
+    }
+  }
 
 }
 
-void minuto_decena(char valor[7]){
-  if (valor[6]=='0'){
-    pwm.setPWM(a3, 0, pos90);
+void poner_char(uint8_t cifra[7],char valor[7]){
+  for (int i=0; i<7; i++){
+    if (cifra[i]>=2 && cifra[i]<=4){
+      if (valor[6-i]=='0'){
+        pwm.setPWM(cifra[i], 0, pos270);
+      }
+      else{
+        pwm.setPWM(cifra[i], 0, pos0);
+      }
+    }
+    else{
+      if (valor[6-i]=='0'){
+        pwm.setPWM(cifra[i], 0, pos90);
+      }
+      else{
+        pwm.setPWM(cifra[i], 0, SERVOMIN);
+      }
+    }
+      
   }
-  else{
-    pwm.setPWM(a3, 0, SERVOMIN);
-  }
- 
-  if (valor[5]=='0'){
-    pwm.setPWM(b3, 0, pos90);
-  }
-  else{
-    pwm.setPWM(b3, 0, SERVOMIN);
-  }
-  
-  if (valor[4]=='0'){
-      pwm.setPWM(c3, 0, SERVOMIN);
-  }
-  else{
-    pwm.setPWM(c3, 0, pos0);
-  }
-  
-  if (valor[3]=='0'){
-    pwm.setPWM(d3, 0, pos270);
-  }
-  else{
-    pwm.setPWM(d3, 0, pos0);
-  }
-  
-  if (valor[2]=='0'){
-    pwm.setPWM(e3, 0, SERVOMIN);
-  }
-  else{
-    pwm.setPWM(e3, 0, pos0);
-  }
-  
-  if (valor[1]=='0'){
-    pwm.setPWM(f3, 0, pos90);
-  }
-  else{
-    pwm.setPWM(f3, 0, SERVOMIN);
-  }
-  
-  if (valor[0]=='0'){
-    pwm.setPWM(g3, 0, pos90-60);
-  }
-  else{
-    pwm.setPWM(g3, 0, SERVOMIN);
-  }
+}
+
+void llamada_animacion(){
+  animacion();
 }
 
 void hora_decena(char valor[7]){
