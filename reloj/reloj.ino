@@ -18,9 +18,25 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 #define pos270  2*SERVOMIN/3 // this is the 'minimum' pulse length count (out of 4096)
 #define pos90 2*SERVOMAX/3 // this is the 'maximum' pulse length count (out of 4096)
 
+// Definicion de caracteres según esta levantado el segemento o bajado. Se escriben en este orden "gfdecba"
+const char char0[7] = "1110111";
 const char char1[7] = "0100100";
 const char char2[7] = "1011101";
 const char char3[7] = "1101101";
+const char char4[7] = "0101110";
+const char char5[7] = "1101011";
+const char char6[7] = "1111011";
+const char char7[7] = "0100101";
+const char char8[7] = "1111111";
+const char char9[7] = "0101111";
+const char chara[7] = "0111111";
+const char charb[7] = "1111010";
+const char charc[7] = "1010011";
+const char chard[7] = "1111100";
+const char chare[7] = "1011011";
+const char charf[7] = "0011011";
+const char charh[7] = "0111110";
+const char charl[7] = "1010010";
 
 // Declaración de cada pieza
 // PCA1 - Horas
@@ -67,31 +83,7 @@ void setup() {
   
   pwm.setPWMFreq(60);  // Analog servos run at ~60 Hz updates
 
-  delay(10);
-  pwm.setPWM(a3, 0, SERVOMIN);
-  pwm.setPWM(b3, 0, SERVOMIN);
-  pwm.setPWM(c3, 0, pos0);
-  pwm.setPWM(d3, 0, pos0);
-  pwm.setPWM(e3, 0, pos0);
-  pwm.setPWM(f3, 0, SERVOMIN);
-  pwm.setPWM(g3, 0, SERVOMIN);
-  delay(5000);
-  pwm.setPWM(a3, 0, pos90);
-  pwm.setPWM(b3, 0, pos90);
-  pwm.setPWM(c3, 0, pos270);
-  pwm.setPWM(d3, 0, pos270);
-  pwm.setPWM(e3, 0, pos270);
-  pwm.setPWM(f3, 0, pos90);
-  pwm.setPWM(g3, 0, pos90-60);
-  delay(500);
-  pwm.setPWM(a3, 0, SERVOMIN);
-  pwm.setPWM(b3, 0, SERVOMIN);
-  pwm.setPWM(c3, 0, pos0);
-  pwm.setPWM(d3, 0, pos0);
-  pwm.setPWM(e3, 0, pos0);
-  pwm.setPWM(f3, 0, SERVOMIN);
-  pwm.setPWM(g3, 0, SERVOMIN);
-  delay(10);
+  animacion();
 }
 
 // you can use this function if you'd like to set the pulse length in seconds
@@ -111,31 +103,48 @@ void setServoPulse(uint8_t n, double pulse) {
 }
 
 void animacion(){
+  activar_todo();
+  delay(200);
   desactivar_todo();
+  delay(500);
+  hora_decena(charh);
+  delay(700);
+  hora_unidad(char0);
+  delay(700);
+  minuto_decena(charl);
+  delay(700);
+  minuto_unidad(chara);
+  delay(2000);
   }
+
+void cafe(){
+  activar_todo();
+  delay(200);
+  desactivar_todo();
+  delay(500);
+  hora_decena(charc);
+  delay(700);
+  hora_unidad(chara);
+  delay(700);
+  minuto_decena(charf);
+  delay(700);
+  minuto_unidad(chare);
+  delay(2000);
+  }
+
 
 void desactivar_todo(){
-  }
-void loop() {
-  // Drive each servo one at a time
   pwm.setPWM(a3, 0, pos90);
-  delay(500);
-  pwm.setPWM(a3, 0, SERVOMIN);
+  pwm.setPWM(b3, 0, pos90);
+  pwm.setPWM(c3, 0, pos270);
+  pwm.setPWM(d3, 0, pos270);
+  pwm.setPWM(e3, 0, pos270);
+  pwm.setPWM(f3, 0, pos90);
+  pwm.setPWM(g3, 0, pos90-60);
 
-  delay(500);
-  pwm.setPWM(c3, 0, 2*SERVOMIN/3);
-  delay(500);
-  pwm.setPWM(c3, 0, pos0);
-  delay(1000);
-  Serial.println("num1");
-  minuto_decimal(char1);
-  delay(1000);
-  Serial.println("num2");
-  minuto_decimal(char2);
-  delay(1000);
-  minuto_decimal(char3);
-  delay(1000);
-  delay(5000);
+}
+
+void activar_todo(){
   pwm.setPWM(a3, 0, SERVOMIN);
   pwm.setPWM(b3, 0, SERVOMIN);
   pwm.setPWM(c3, 0, pos0);
@@ -143,14 +152,41 @@ void loop() {
   pwm.setPWM(e3, 0, pos0);
   pwm.setPWM(f3, 0, SERVOMIN);
   pwm.setPWM(g3, 0, SERVOMIN);
-  delay(2000);
+}
+
+void loop() {
+
+  desactivar_todo();
+  delay(1000);
+  minuto_decena(char9);
+  delay(1000);
+  minuto_decena(char8);
+  delay(1000);
+  minuto_decena(char7);
+  delay(1000);
+  minuto_decena(char6);
+  delay(1000);
+  minuto_decena(char5);
+  delay(1000);
+  minuto_decena(char4);
+  delay(1000);
+  minuto_decena(char3);
+  delay(1000);
+  minuto_decena(char2);
+  delay(1000);
+  minuto_decena(char1);
+  delay(1000);
+  minuto_decena(char0);
+  delay(1000);
+  
+  activar_todo();
+  delay(60000);
 
 }
 
-void minuto_decimal(char valor[7]){
+void minuto_decena(char valor[7]){
   if (valor[6]=='0'){
     pwm.setPWM(a3, 0, pos90);
-    
   }
   else{
     pwm.setPWM(a3, 0, SERVOMIN);
@@ -162,25 +198,28 @@ void minuto_decimal(char valor[7]){
   else{
     pwm.setPWM(b3, 0, SERVOMIN);
   }
+  
   if (valor[4]=='0'){
-    Serial.println("c=0");
-    pwm.setPWM(c3, 0, SERVOMIN);
+      pwm.setPWM(c3, 0, SERVOMIN);
   }
   else{
     pwm.setPWM(c3, 0, pos0);
   }
+  
   if (valor[3]=='0'){
     pwm.setPWM(d3, 0, pos270);
   }
   else{
     pwm.setPWM(d3, 0, pos0);
   }
+  
   if (valor[2]=='0'){
     pwm.setPWM(e3, 0, SERVOMIN);
   }
   else{
     pwm.setPWM(e3, 0, pos0);
   }
+  
   if (valor[1]=='0'){
     pwm.setPWM(f3, 0, pos90);
   }
@@ -194,4 +233,11 @@ void minuto_decimal(char valor[7]){
   else{
     pwm.setPWM(g3, 0, SERVOMIN);
   }
+}
+
+void hora_decena(char valor[7]){
+}
+void hora_unidad(char valor[7]){
+}
+void minuto_unidad(char valor[7]){
 }
