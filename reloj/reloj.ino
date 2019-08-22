@@ -19,6 +19,7 @@ Adafruit_PWMServoDriver pwm2 = Adafruit_PWMServoDriver(&Wire,0x41);
 #define pos90 2*SERVOMAX/3 // this is the 'maximum' pulse length count (out of 4096)
 
 // Definicion de caracteres según esta levantado el segemento o bajado. Se escriben en este orden "gfdecba"
+const char charEmpty[7] = "0000000";
 const char char0[7] = "1110111";
 const char char1[7] = "0100100";
 const char char2[7] = "1011101";
@@ -41,7 +42,7 @@ const char charl[7] = "1010010";
 // Declaración de cada pieza
 // PCA1 - Horas
 // ----------- Decimales
-uint8_t hora_dec[7] = {0,1,2,3,4,5,6};
+uint8_t hora_dec[7] = {5,4,6,3,2,1,0};
 
 uint8_t a1 = 0;
 uint8_t b1 = 1;
@@ -51,6 +52,7 @@ uint8_t e1 = 4;
 uint8_t f1 = 5;
 uint8_t g1 = 6;
 // ----------- Unidades 
+uint8_t hora_uni[7] = {8,9,10,11,12,13,14};
 
 uint8_t a2 = 8;
 uint8_t b2 = 9;
@@ -72,6 +74,8 @@ uint8_t e3 = 4;
 uint8_t f3 = 5;
 uint8_t g3 = 6;
 // ----------- Unidades 
+uint8_t minuto_uni[7] = {8,9,10,11,12,13,14};
+
 uint8_t a4 = 8;
 uint8_t b4 = 9;
 uint8_t c4 = 10;
@@ -80,126 +84,119 @@ uint8_t e4 = 12;
 uint8_t f4 = 13;
 uint8_t g4 = 14;
 
+int hora;
+int minuto;
+
 void setup() {
   Serial.begin(9600);
 
   pwm.begin();
-  
   pwm.setPWMFreq(60);  // Analog servos run at ~60 Hz updates
+  
+  pwm2.begin();
+  pwm2.setPWMFreq(60);  // Analog servos run at ~60 Hz updates
 
   pinMode(2,INPUT);
-  animacion();
-}
+//  animacion();
+//
+//  hora = 48;
+//  minuto = 0;
+//  
+//  poner_hora(hora_dec,char4);
+//  poner_hora(hora_uni,char8);
+//  poner_hora(minuto_dec,char0);
+//  poner_hora(minuto_uni,char0);
 
-// you can use this function if you'd like to set the pulse length in seconds
-// e.g. setServoPulse(0, 0.001) is a ~1 millisecond pulse width. its not precise!
-void setServoPulse(uint8_t n, double pulse) {
-  double pulselength;
-  
-  pulselength = 1000000;   // 1,000,000 us per second
-  pulselength /= 60;   // 60 Hz
-  Serial.print(pulselength); Serial.println(" us per period"); 
-  pulselength /= 4096;  // 12 bits of resolution
-  Serial.print(pulselength); Serial.println(" us per bit"); 
-  pulse *= 1000000;  // convert to us
-  pulse /= pulselength;
-  Serial.println(pulse);
-  pwm.setPWM(n, 0, pulse);
 }
 
 void animacion(){
-  activar_todo();
-  delay(200);
-  desactivar_todo();
-  delay(500);
-  hora_decena(charh);
-  delay(700);
-  hora_unidad(char0);
-  delay(700);
-  poner_char(minuto_dec,charl);
-  delay(700);
-  minuto_unidad(chara);
-  delay(2000);
+//  activar_todo();
+//  delay(200);
+//  desactivar_todo();
+//  delay(500);
+//  hora_decena(charh);
+//  delay(700);
+//  hora_unidad(char0);
+//  delay(700);
+//  poner_minuto(minuto_dec,charl);
+//  delay(700);
+//  minuto_unidad(chara);
+//  delay(2000);
   }
 
 void cafe(){
-  activar_todo();
-  delay(200);
-  desactivar_todo();
-  delay(500);
-  hora_decena(charc);
-  delay(700);
-  hora_unidad(chara);
-  delay(700);
-  poner_char(minuto_dec,charf);
-  delay(700);
-  minuto_unidad(chare);
-  delay(2000);
+//  activar_todo();
+//  delay(200);
+//  desactivar_todo();
+//  delay(500);
+//  hora_decena(charc);
+//  delay(700);
+//  hora_unidad(chara);
+//  delay(700);
+//  poner_minuto(minuto_dec,charf);
+//  delay(700);
+//  minuto_unidad(chare);
+//  delay(2000);
   }
 
 
 void desactivar_todo(){
-  pwm.setPWM(a3, 0, pos90);
-  pwm.setPWM(b3, 0, pos90);
-  pwm.setPWM(c3, 0, pos270);
-  pwm.setPWM(d3, 0, pos270);
-  pwm.setPWM(e3, 0, pos270);
-  pwm.setPWM(f3, 0, pos90);
-  pwm.setPWM(g3, 0, pos90-60);
+  poner_minuto(minuto_dec,charEmpty);
+  poner_minuto(minuto_uni,charEmpty);
+  poner_hora(minuto_dec,charEmpty);
+  poner_hora(minuto_uni,charEmpty);
+
+  // pwm.setPWM(a3, 0, pos90);
+  // pwm.setPWM(b3, 0, pos90);
+  // pwm.setPWM(c3, 0, pos270);
+  // pwm.setPWM(d3, 0, pos270);
+  // pwm.setPWM(e3, 0, pos270);
+  // pwm.setPWM(f3, 0, pos90);
+  // pwm.setPWM(g3, 0, pos90-60);
 
 }
 
 void activar_todo(){
-  pwm.setPWM(a3, 0, SERVOMIN);
-  pwm.setPWM(b3, 0, SERVOMIN);
-  pwm.setPWM(c3, 0, pos0);
-  pwm.setPWM(d3, 0, pos0);
-  pwm.setPWM(e3, 0, pos0);
-  pwm.setPWM(f3, 0, SERVOMIN);
-  pwm.setPWM(g3, 0, SERVOMIN);
+  poner_minuto(minuto_dec,char8);
+  poner_minuto(minuto_uni,char8);
+  poner_hora(minuto_dec,char8);
+  poner_hora(minuto_uni,char8);
+  // pwm.setPWM(a3, 0, SERVOMIN);
+  // pwm.setPWM(b3, 0, SERVOMIN);
+  // pwm.setPWM(c3, 0, pos0);
+  // pwm.setPWM(d3, 0, pos0);
+  // pwm.setPWM(e3, 0, pos0);
+  // pwm.setPWM(f3, 0, SERVOMIN);
+  // pwm.setPWM(g3, 0, SERVOMIN);
 }
 
 void loop() {
-
-  activar_todo();
-  delay(1000);
-  poner_char(minuto_dec,char9);
-  delay(1000);
-  poner_char(minuto_dec,char8);
-  delay(1000);
-  poner_char(minuto_dec,char7);
-  delay(1000);
-  poner_char(minuto_dec,char6);
-  delay(1000);
-  poner_char(minuto_dec,char5);
-  delay(1000);
-  poner_char(minuto_dec,char4);
-  delay(1000);
-  poner_char(minuto_dec,char3);
-  delay(1000);
-  poner_char(minuto_dec,char2);
-  delay(1000);
-  poner_char(minuto_dec,char1);
-  delay(1000);
-  poner_char(minuto_dec,char0);
-  delay(1000);
-  
-  activar_todo();
-  for (int i=0;i<60;i++){
-    if (digitalRead(2)==LOW){
-      animacion();
-    }
-    else{
-      activar_todo();
-      delay(1000);
-    }
-  }
-
+//  delay(59000);
+//  if( minuto==0 && hora==0){
+//    activar_todo();
+//    delay(200);
+//    desactivar_todo();
+//    delay(200);
+//  }
+//  else if(minuto==0){
+//    minuto=59;
+//    hora=-1;
+//  }
+//  else{
+//    minuto=-1;
+//  }
+//  // Mostrar numero
+  poner_minuto(minuto_uni,char5);
+  delay(300);
+  poner_minuto(minuto_uni,char4);
+  delay(300);
+  poner_minuto(minuto_uni,char3);
+  delay(300);
 }
 
-void poner_char(uint8_t cifra[7],char valor[7]){
+void poner_minuto(uint8_t cifra[7],char valor[7]){
   for (int i=0; i<7; i++){
-    if (cifra[i]>=2 && cifra[i]<=4){
+    if (i>=2 && i<=4){
       if (valor[6-i]=='0'){
         pwm.setPWM(cifra[i], 0, pos270);
       }
@@ -213,6 +210,29 @@ void poner_char(uint8_t cifra[7],char valor[7]){
       }
       else{
         pwm.setPWM(cifra[i], 0, SERVOMIN);
+      }
+    }
+      
+  }
+}
+
+void poner_hora(uint8_t cifra[7],char valor[7]){
+  for (int i=0; i<7; i++){
+    //if (cifra[i]>=2 && cifra[i]<=4){
+    if (i>=2 && i<=4){
+      if (valor[6-i]=='0'){
+        pwm2.setPWM(cifra[i], 0, pos270);
+      }
+      else{
+        pwm2.setPWM(cifra[i], 0, pos0);
+      }
+    }
+    else{
+      if (valor[6-i]=='0'){
+        pwm2.setPWM(cifra[i], 0, pos90);
+      }
+      else{
+        pwm2.setPWM(cifra[i], 0, SERVOMIN);
       }
     }
       
