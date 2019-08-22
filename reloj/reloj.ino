@@ -1,12 +1,12 @@
-
+// TODO: Crear una flag de activación de los movimientos de los servos. Si esta desactivada los servos no se mueven pero el programa sigue en ejecución. Ideal para las noches y mostrar mensajes.
 
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
 
 // Este es el PCA principal con default address 0x40
-Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
+Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(&Wire,0x40);
 // esta será la direccion del PCA esclavo/puenteado  TODO: Soldar los pines del PCA
-//Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(0x41);
+Adafruit_PWMServoDriver pwm2 = Adafruit_PWMServoDriver(&Wire,0x41);
 
 // Depending on your servo make, the pulse width min and max may vary, you 
 // want these to be as small/large as possible without hitting the hard stop
