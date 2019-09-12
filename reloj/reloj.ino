@@ -94,6 +94,8 @@ uint8_t g4 = 14;
 
 int hora;
 int minuto;
+int tiempo1;
+int tiempo2;
 
 void setup() {
   Serial.begin(9600);
@@ -106,16 +108,75 @@ void setup() {
 
   pinMode(2,INPUT);
 
-  poner_hora(hora_dec,barr1);
-  poner_hora(hora_uni,barr1);
-  poner_minuto(minuto_dec,barr1);
-  poner_minuto(minuto_uni,barr1);
-
-  delay(5000);
   animacion();
 
   hora = 10;
   minuto = 05;
+
+  int num = minuto/10;
+  translate_min(minuto_dec,num);
+  num = minuto - (num*10);
+  translate_min(minuto_uni,num);
+  num = hora/10;
+  translate_hora(hora_dec,num);
+  num = hora - (num*10);
+  translate_hora(hora_uni,num);
+  
+  delay(200);
+  tiempo1 = millis();
+  
+}
+
+void loop() {
+ tiempo2 = millis();
+ delay(60000-(tiempo2-tiempo1));
+
+ tiempo1 = millis();
+ int num = minuto/10;
+ translate_min(minuto_dec,num);
+ num = minuto - (num*10);
+ translate_min(minuto_uni,num);
+ num = hora/10;
+ translate_hora(hora_dec,num);
+ num = hora - (num*10);
+ translate_hora(hora_uni,num);
+
+ if( minuto==59 && hora==23){
+   hora = 0;
+   minuto = 0;
+   
+ }else if(minuto==59){
+   minuto=0;
+   hora++;
+   
+ }else{
+   minuto++;
+ }
+ 
+ if (hora==10 && minuto >= 55 && minuto <= 59){
+  for (int i=0; i<4; i++){
+    barrido_in();
+    delay(400);
+    cafe();
+    delay(3000);
+    barrido_out();
+    delay(1000);
+    barrido_in();
+   
+    num = minuto/10;
+    translate_min(minuto_dec,num);
+    num = minuto - (num*10);
+    translate_min(minuto_uni,num);
+    num = hora/10;
+    translate_hora(hora_dec,num);
+    num = hora - (num*10);
+    translate_hora(hora_uni,num);
+
+    delay(3000);
+    barrido_out();
+    delay(500);
+  }
+ }
 }
 
 void animacion(){
@@ -124,6 +185,7 @@ void animacion(){
   desactivar_todo();
   delay(500);
   barrido();
+  delay(200);
   poner_hora(hora_dec,charh);
   delay(200);
   poner_hora(hora_uni,char0);
@@ -172,13 +234,70 @@ void barrido(){
   
 }
 
+void barrido_in(){
+  desactivar_todo();
+  delay(300);
+  poner_hora(hora_dec,barr1);
+  delay(200);
+  poner_hora(hora_dec,barr2);
+  delay(200);
+  poner_hora(hora_dec,char8);
+  delay(200);
+  poner_hora(hora_uni,barr1);
+  delay(200);
+  poner_hora(hora_uni,barr2);
+  delay(200);
+  poner_hora(hora_uni,char8);
+  delay(200);
+  poner_minuto(minuto_dec,barr1);
+  delay(200);
+  poner_minuto(minuto_dec,barr2);
+  delay(200);
+  poner_minuto(minuto_dec,char8);
+  delay(200);
+  poner_minuto(minuto_uni,barr1);
+  delay(200);
+  poner_minuto(minuto_uni,barr2);
+  delay(200);
+  poner_minuto(minuto_uni,char8);
+  delay(800);  
+}
+
+void barrido_out(){
+  activar_todo();
+  delay(300);
+  poner_hora(hora_dec,barr3);
+  delay(200);
+  poner_hora(hora_dec,barr4);
+  delay(200);
+  poner_hora(hora_dec,charEmpty);
+  delay(200);
+  poner_hora(hora_uni,barr3);
+  delay(200);
+  poner_hora(hora_uni,barr4);
+  delay(200);
+  poner_hora(hora_uni,charEmpty);
+  delay(200);
+  poner_minuto(minuto_dec,barr3);
+  delay(200);
+  poner_minuto(minuto_dec,barr4);
+  delay(200);
+  poner_minuto(minuto_dec,charEmpty);
+  delay(200);
+  poner_minuto(minuto_uni,barr3);
+  delay(200);
+  poner_minuto(minuto_uni,barr4);
+  delay(200);
+  poner_minuto(minuto_uni,charEmpty);
+  delay(800);
+}
+
 void cafe(){
   poner_hora(hora_dec,charc);
   poner_hora(hora_uni,chara);
   poner_minuto(minuto_dec,charf);
-  poner_minuto(minuto_uni,chare);
-  
-  }
+  poner_minuto(minuto_uni,chare);  
+}
 
 
 void desactivar_todo(){
@@ -186,7 +305,6 @@ void desactivar_todo(){
   poner_minuto(minuto_uni,charEmpty);
   poner_hora(hora_dec,charEmpty);
   poner_hora(hora_uni,charEmpty);
-
 }
 
 void activar_todo(){
@@ -194,50 +312,6 @@ void activar_todo(){
   poner_minuto(minuto_uni,char8);
   poner_hora(hora_dec,char8);
   poner_hora(hora_uni,char8);
-}
-
-void loop() {
-
- int num = minuto/10;
- translate_min(minuto_dec,num);
- num = minuto - (num*10);
- translate_min(minuto_uni,num);
- num = hora/10;
- translate_hora(hora_dec,num);
- num = hora - (num*10);
- translate_hora(hora_uni,num);
- 
- delay(59950);
- 
- if( minuto==59 && hora==23){
-   hora = 0;
-   minuto = 0; 
- }
- else if(minuto==59){
-   minuto=0;
-   hora++;
- }
- else{
-   minuto++;
- }
- if (hora==10 && minuto >= 55 && minuto <= 58){
-   cafe();
-   delay(10000);
-   desactivar_todo();
-   delay(600);
-   cafe();
-   delay(10000);
-   desactivar_todo();
-   delay(600);
-   cafe();
-   delay(10000);
-   desactivar_todo();
-   delay(600);
-   cafe();
-   delay(27100);
-   minuto++;
- }
- 
 }
 
 void poner_minuto(uint8_t cifra[7],char valor[7]){
@@ -355,7 +429,4 @@ void translate_hora(uint8_t cifra[7],int num){
   default:
     break;
   }
-}
-void llamada_animacion(){
-  animacion();
 }
