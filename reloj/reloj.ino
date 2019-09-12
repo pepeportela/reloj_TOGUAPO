@@ -38,6 +38,14 @@ const char chare[7] = "1011011";
 const char charf[7] = "0011011";
 const char charh[7] = "0111110";
 const char charl[7] = "1010010";
+const char charp[7] = "0011111";
+const char charu[7] = "1110110";
+
+// Barrido 
+const char barr1[7] = "0010010";
+const char barr2[7] = "1011011";
+const char barr3[7] = "1101101";
+const char barr4[7] = "0100100";
 
 // Declaración de cada pieza
 // PCA1 - Horas
@@ -97,13 +105,17 @@ void setup() {
   pwm2.setPWMFreq(60);  // Analog servos run at ~60 Hz updates
 
   pinMode(2,INPUT);
+
+  poner_hora(hora_dec,barr1);
+  poner_hora(hora_uni,barr1);
+  poner_minuto(minuto_dec,barr1);
+  poner_minuto(minuto_uni,barr1);
+
+  delay(5000);
   animacion();
 
-  hora = 48;
-  minuto = 0;
-  
-
-
+  hora = 10;
+  minuto = 05;
 }
 
 void animacion(){
@@ -111,86 +123,121 @@ void animacion(){
   delay(500);
   desactivar_todo();
   delay(500);
+  barrido();
   poner_hora(hora_dec,charh);
   delay(200);
   poner_hora(hora_uni,char0);
   delay(200);
   poner_minuto(minuto_dec,charl);
   delay(200);
-  poner_minuto(minuto_dec,chara);
+  poner_minuto(minuto_uni,chara);
   delay(3000);
   }
 
+void barrido(){
+  poner_hora(hora_dec,barr1);
+  delay(200);
+  poner_hora(hora_dec,barr2);
+  delay(200);
+  poner_hora(hora_dec,barr3);
+  delay(200);
+  poner_hora(hora_dec,barr4);
+  poner_hora(hora_uni,barr1);
+  delay(200);
+  poner_hora(hora_dec,charEmpty);
+  poner_hora(hora_uni,barr2);
+  delay(200);
+  poner_hora(hora_uni,barr3);
+  delay(200);
+  poner_hora(hora_uni,barr4);
+  poner_minuto(minuto_dec,barr1);
+  delay(200);
+  poner_hora(hora_uni,charEmpty);
+  poner_minuto(minuto_dec,barr2);
+  delay(200);
+  poner_minuto(minuto_dec,barr3);
+  delay(200);
+  poner_minuto(minuto_dec,barr4);
+  poner_minuto(minuto_uni,barr1);
+  delay(200);
+  poner_minuto(minuto_dec,charEmpty);
+  poner_minuto(minuto_uni,barr2);
+  delay(200);
+  poner_minuto(minuto_uni,barr3);
+  delay(200);
+  poner_minuto(minuto_uni,barr4);
+  delay(200);
+  desactivar_todo();
+  delay(600);
+  
+}
+
 void cafe(){
-//  activar_todo();
-//  delay(200);
-//  desactivar_todo();
-//  delay(500);
-//  hora_decena(charc);
-//  delay(700);
-//  hora_unidad(chara);
-//  delay(700);
-//  poner_minuto(minuto_dec,charf);
-//  delay(700);
-//  minuto_unidad(chare);
-//  delay(2000);
+  poner_hora(hora_dec,charc);
+  poner_hora(hora_uni,chara);
+  poner_minuto(minuto_dec,charf);
+  poner_minuto(minuto_uni,chare);
+  
   }
 
 
 void desactivar_todo(){
   poner_minuto(minuto_dec,charEmpty);
   poner_minuto(minuto_uni,charEmpty);
-  poner_hora(minuto_dec,charEmpty);
-  poner_hora(minuto_uni,charEmpty);
-
-  // pwm.setPWM(a3, 0, pos90);
-  // pwm.setPWM(b3, 0, pos90);
-  // pwm.setPWM(c3, 0, pos270);
-  // pwm.setPWM(d3, 0, pos270);
-  // pwm.setPWM(e3, 0, pos270);
-  // pwm.setPWM(f3, 0, pos90);
-  // pwm.setPWM(g3, 0, pos90-60);
+  poner_hora(hora_dec,charEmpty);
+  poner_hora(hora_uni,charEmpty);
 
 }
 
 void activar_todo(){
   poner_minuto(minuto_dec,char8);
   poner_minuto(minuto_uni,char8);
-  poner_hora(minuto_dec,char8);
-  poner_hora(minuto_uni,char8);
-  // pwm.setPWM(a3, 0, SERVOMIN);
-  // pwm.setPWM(b3, 0, SERVOMIN);
-  // pwm.setPWM(c3, 0, pos0);
-  // pwm.setPWM(d3, 0, pos0);
-  // pwm.setPWM(e3, 0, pos0);
-  // pwm.setPWM(f3, 0, SERVOMIN);
-  // pwm.setPWM(g3, 0, SERVOMIN);
+  poner_hora(hora_dec,char8);
+  poner_hora(hora_uni,char8);
 }
 
 void loop() {
- delay(59000);
- if( minuto==0 && hora==0){
-   activar_todo();
-   delay(200);
-   desactivar_todo();
-   delay(200);
- }
- else if(minuto==0){
-   minuto=59;
-   hora=-1;
- }
- else{
-   minuto=-1;
- }
+
  int num = minuto/10;
  translate_min(minuto_dec,num);
  num = minuto - (num*10);
  translate_min(minuto_uni,num);
- // Mostrar hora
  num = hora/10;
  translate_hora(hora_dec,num);
  num = hora - (num*10);
  translate_hora(hora_uni,num);
+ 
+ delay(59950);
+ 
+ if( minuto==59 && hora==23){
+   hora = 0;
+   minuto = 0; 
+ }
+ else if(minuto==59){
+   minuto=0;
+   hora++;
+ }
+ else{
+   minuto++;
+ }
+ if (hora==10 && minuto >= 55 && minuto <= 58){
+   cafe();
+   delay(10000);
+   desactivar_todo();
+   delay(600);
+   cafe();
+   delay(10000);
+   desactivar_todo();
+   delay(600);
+   cafe();
+   delay(10000);
+   desactivar_todo();
+   delay(600);
+   cafe();
+   delay(27100);
+   minuto++;
+ }
+ 
 }
 
 void poner_minuto(uint8_t cifra[7],char valor[7]){
