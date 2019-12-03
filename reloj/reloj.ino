@@ -109,18 +109,12 @@ void setup() {
   pinMode(2,INPUT);
 
   animacion();
-
   hora = 10;
   minuto = 05;
+  clockEpoch = (hora * 3600000) + (minuto * 60000);
+  timeStart = millis();
 
-  int num = minuto/10;
-  translate_min(minuto_dec,num);
-  num = minuto - (num*10);
-  translate_min(minuto_uni,num);
-  num = hora/10;
-  translate_hora(hora_dec,num);
-  num = hora - (num*10);
-  translate_hora(hora_uni,num);
+  updateClockTime(clockEpoch, timeStart);
   
   delay(200);
   tiempo1 = millis();
@@ -128,32 +122,14 @@ void setup() {
 }
 
 void loop() {
- tiempo2 = millis();
- delay(60000-(tiempo2-tiempo1));
-
- tiempo1 = millis();
- int num = minuto/10;
- translate_min(minuto_dec,num);
- num = minuto - (num*10);
- translate_min(minuto_uni,num);
- num = hora/10;
- translate_hora(hora_dec,num);
- num = hora - (num*10);
- translate_hora(hora_uni,num);
-
- if( minuto==59 && hora==23){
-   hora = 0;
-   minuto = 0;
-   
- }else if(minuto==59){
-   minuto=0;
-   hora++;
-   
- }else{
-   minuto++;
- }
+  updateClockTime(clockEpoch, timeStart);
+  currentTime = getCurrentTime(clockEpoch, timeStart);
  
- if (hora==10 && minuto >= 55 && minuto <= 59){
+  //Note: Maybe make this into a constant
+  timeCoffeeStarts = timeToMillis(11, 55); //11:55
+  timeCoffeeEnds = timeToMillis(12, 0); //12:00
+ 
+  if (currentTime > timeCoffeeStarts && currentTime < timeCoffeeEnds ){
   for (int i=0; i<4; i++){
     barrido_in();
     delay(400);
@@ -163,20 +139,18 @@ void loop() {
     delay(1000);
     barrido_in();
    
-    num = minuto/10;
-    translate_min(minuto_dec,num);
-    num = minuto - (num*10);
-    translate_min(minuto_uni,num);
-    num = hora/10;
-    translate_hora(hora_dec,num);
-    num = hora - (num*10);
-    translate_hora(hora_uni,num);
+    updateClockTime(clockEpoch, timeStart);
 
     delay(3000);
     barrido_out();
     delay(500);
   }
  }
+
+ //We get the time again since after running the code some time may have passed
+ currentTime = getCurrentTime(clockEpoch, timeStart);
+ delay(60000 - (currentTime % 60000));
+
 }
 
 void animacion(){
@@ -394,6 +368,7 @@ void translate_min(uint8_t cifra[7],int num){
     break;
   }
 }
+
 void translate_hora(uint8_t cifra[7],int num){
   switch (num) {
   case 0:
@@ -429,4 +404,30 @@ void translate_hora(uint8_t cifra[7],int num){
   default:
     break;
   }
+}
+
+int timeToMillis(hours, minutes){
+    return (hours * 3600 + minutes * 60) * 1000; 
+}
+
+void getCurrentTime(clockEpoch, timeStart){
+    timePassed = clockEpoch + millis() - timeStart;
+    return timePassed % 86400000; //Amount of milliseconds in a day.
+}
+
+void updateClockTime(clockEpoch, timeStart){
+    currentTime = getCurrentTime(clockEpoch, timeStart);
+ 
+    currentMinute = (currentTime / 60000) % 60;
+    minuteDigits0 = currentMinute % 10;
+    minuteDigits1 = (currentMinute / 10) % 10;
+   
+    currentHour = (currentTime / 3600000) % 3600;
+    hourDigits0 = currentHour % 10;
+    hourDigits1 = (currentHour / 10) % 10;
+
+    translate_min(minuto_uni, minutesDigits0);
+    translate_min(minuto_dec, minutesDigits1);
+    translate_min(hora_uni, hoursDigits0);
+    translate_min(hora_dec, hoursDigits1);
 }
