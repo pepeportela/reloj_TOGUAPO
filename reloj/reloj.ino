@@ -98,6 +98,7 @@ int tiempo1;
 int tiempo2;
 long timeStart;
 long clockEpoch;
+long finalTime;
 
 void setup() {
   Serial.begin(9600);
@@ -115,6 +116,7 @@ void setup() {
   minuto = 50;
   clockEpoch = (hora * 3600000) + (minuto * 60000);
   timeStart = millis();
+  finalTime = timeToMillis(14, 18);
 
   updateClockTime(clockEpoch, timeStart);
 
@@ -131,27 +133,11 @@ void loop() {
   long timeCoffeeStarts = timeToMillis(11, 55); //11:55
   long timeCoffeeEnds = timeToMillis(12, 0); //12:00
 
-  if (currentTime > timeCoffeeStarts && currentTime < timeCoffeeEnds ){
-  for (int i=0; i<1; i++){
-    barrido_in();
-    delay(400);
-    cafe();
-    delay(3000);
-    barrido_out();
-    delay(1000);
-    barrido_in();
-
-    updateClockTime(clockEpoch, timeStart);
-
-    delay(3000);
-    barrido_out();
-    delay(500);
-  }
- }
-
  //We get the time again since after running the code some time may have passed
  currentTime = getCurrentTime(clockEpoch, timeStart);
- delay(60000 - (currentTime % 60000));
+ Serial.println(currentTime);
+ Serial.println(((finalTime - millis() + timeStart) % 1000));
+ delay(10 + (finalTime - millis() + timeStart) % 1000 );
 
 }
 
@@ -418,7 +404,8 @@ long getCurrentTime(long clockEpoch, long timeStart){
 }
 
 void updateClockTime(long clockEpoch, long timeStart){
-    long currentTime = getCurrentTime(clockEpoch, timeStart);
+    //long currentTime = getCurrentTime(clockEpoch, timeStart);
+    long currentTime = finalTime - millis() + timeStart;
 
     int currentMinute = (currentTime / 60000) % 60;
     int minutesDigits0 = currentMinute % 10;
@@ -428,8 +415,19 @@ void updateClockTime(long clockEpoch, long timeStart){
     int hoursDigits0 = currentHour % 10;
     int hoursDigits1 = (currentHour / 10) % 10;
 
-    translate_min(minuto_uni, minutesDigits0);
-    translate_min(minuto_dec, minutesDigits1);
-    translate_hora(hora_uni, hoursDigits0);
-    translate_hora(hora_dec, hoursDigits1);
+    if(currentTime < 3600000){
+      int currentSecond = (currentTime / 1000) % 60;
+      int secondsDigits0 = currentSecond % 10;
+      int secondsDigits1 = (currentSecond / 10) % 10;
+  
+      translate_min(minuto_uni, secondsDigits0);
+      translate_min(minuto_dec, secondsDigits1);
+      translate_hora(hora_uni, minutesDigits0);
+      translate_hora(hora_dec, minutesDigits1);
+    } else {
+        translate_min(minuto_uni, minutesDigits0);
+        translate_min(minuto_dec, minutesDigits1);
+        translate_hora(hora_uni, hoursDigits0);
+        translate_hora(hora_dec, hoursDigits1);
+    }
 }
