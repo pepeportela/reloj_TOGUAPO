@@ -4,9 +4,9 @@
 #include <Adafruit_PWMServoDriver.h>
 
 // Este es el PCA principal con default address 0x40
-Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(&Wire,0x40);
+Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(0x41, Wire);
 // esta será la direccion del PCA esclavo/puenteado  TODO: Soldar los pines del PCA
-Adafruit_PWMServoDriver pwm2 = Adafruit_PWMServoDriver(&Wire,0x41);
+Adafruit_PWMServoDriver pwm2 = Adafruit_PWMServoDriver(0x40, Wire);
 
 // Depending on your servo make, the pulse width min and max may vary, you
 // want these to be as small/large as possible without hitting the hard stop
@@ -50,7 +50,7 @@ const char barr4[7] = "0100100";
 // Declaración de cada pieza
 // PCA1 - Horas
 // ----------- Decimales
-uint8_t hora_dec[7] = {5,4,6,3,2,1,0};
+uint8_t hora_dec[7] = {0,1,2,3,4,5,6};
 
 uint8_t a1 = 0;
 uint8_t b1 = 1;
@@ -110,49 +110,41 @@ void setup() {
 
   pinMode(2,INPUT);
 
+  //updateClockTime(clockEpoch, timeStart);
+  delay(1000);
+  //tiempo1 = millis();
   animacion();
-  hora = 18;
-  minuto = 50;
-  clockEpoch = (hora * 3600000) + (minuto * 60000);
-  timeStart = millis();
-
-  updateClockTime(clockEpoch, timeStart);
-
-  delay(200);
-  tiempo1 = millis();
-
 }
 
 void loop() {
-  updateClockTime(clockEpoch, timeStart);
-  long currentTime = getCurrentTime(clockEpoch, timeStart);
+//   updateClockTime(clockEpoch, timeStart);
+//   long currentTime = getCurrentTime(clockEpoch, timeStart);
 
-  //Note: Maybe make this into a constant
-  long timeCoffeeStarts = timeToMillis(11, 55); //11:55
-  long timeCoffeeEnds = timeToMillis(12, 0); //12:00
+//   //Note: Maybe make this into a constant
+//   long timeCoffeeStarts = timeToMillis(11, 55); //11:55
+//   long timeCoffeeEnds = timeToMillis(12, 0); //12:00
 
-  if (currentTime > timeCoffeeStarts && currentTime < timeCoffeeEnds ){
-  for (int i=0; i<1; i++){
-    barrido_in();
-    delay(400);
-    cafe();
-    delay(3000);
-    barrido_out();
-    delay(1000);
-    barrido_in();
+//   if (currentTime > timeCoffeeStarts && currentTime < timeCoffeeEnds ){
+//   for (int i=0; i<1; i++){
+//     barrido_in();
+//     delay(400);
+//     cafe();
+//     delay(3000);
+//     barrido_out();
+//     delay(1000);
+//     barrido_in();
 
-    updateClockTime(clockEpoch, timeStart);
+//     updateClockTime(clockEpoch, timeStart);
 
-    delay(3000);
-    barrido_out();
-    delay(500);
-  }
- }
+//     delay(3000);
+//     barrido_out();
+//     delay(500);
+//   }
+//  }
 
- //We get the time again since after running the code some time may have passed
- currentTime = getCurrentTime(clockEpoch, timeStart);
- delay(60000 - (currentTime % 60000));
-
+//  //We get the time again since after running the code some time may have passed
+//  currentTime = getCurrentTime(clockEpoch, timeStart);
+//  delay(60000 - (currentTime % 60000));
 }
 
 void animacion(){
