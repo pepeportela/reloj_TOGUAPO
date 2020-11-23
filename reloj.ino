@@ -5,9 +5,9 @@
 #include <DS3231.h>
 
 // Este es el PCA principal con default address 0x40
-Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(0x41, Wire);
+Adafruit_PWMServoDriver pwm_min = Adafruit_PWMServoDriver(0x41, Wire);
 // esta será la direccion del PCA esclavo/puenteado  TODO: Soldar los pines del PCA
-Adafruit_PWMServoDriver pwm2 = Adafruit_PWMServoDriver(0x40, Wire);
+Adafruit_PWMServoDriver pwm_hora = Adafruit_PWMServoDriver(0x40, Wire);
 
 // Depending on your servo make, the pulse width min and max may vary, you
 // want these to be as small/large as possible without hitting the hard stop
@@ -52,7 +52,8 @@ const char barr4[7] = "0100100";
 // PCA1 - Horas
 // ----------- Decimales
 uint8_t hora_dec[7] = {0,1,2,3,4,5,6};
-
+int servos_hora_dec_on_0[7] = {pos90, pos90, pos270, pos270, pos270, pos90, pos90};
+int servos_hora_dec_on_1[7] = {SERVOMIN, SERVOMIN, pos0, pos0, pos0, SERVOMIN, SERVOMIN};
 uint8_t a1 = 0;
 uint8_t b1 = 1;
 uint8_t c1 = 2;
@@ -62,6 +63,8 @@ uint8_t f1 = 5;
 uint8_t g1 = 6;
 // ----------- Unidades
 uint8_t hora_uni[7] = {8,9,10,11,12,13,14};
+int servos_hora_uni_on_0[7] = {pos90, pos90, pos270, pos270, pos270, pos90, pos90};
+int servos_hora_uni_on_1[7] = {SERVOMIN, SERVOMIN+28, pos0, pos0, pos0, SERVOMIN, SERVOMIN};
 
 uint8_t a2 = 8;
 uint8_t b2 = 9;
@@ -74,6 +77,8 @@ uint8_t g2 = 14;
 // PCA2 - Minutos
 // ----------- Decimales
 uint8_t minuto_dec[7] = {0,1,2,3,4,5,6};
+int servos_minuto_dec_on_0[7] = {pos90, pos90, pos270, pos270, pos270, pos90, pos90};
+int servos_minuto_dec_on_1[7] = {SERVOMIN, SERVOMIN, pos0, pos0, pos0, SERVOMIN, SERVOMIN};
 
 uint8_t a3 = 0;
 uint8_t b3 = 1;
@@ -84,6 +89,8 @@ uint8_t f3 = 5;
 uint8_t g3 = 6;
 // ----------- Unidades
 uint8_t minuto_uni[7] = {8,9,10,11,12,13,14};
+int servos_minuto_uni_on_0[7] = {pos90, pos90, pos270, pos270, pos270, pos90, pos90};
+int servos_minuto_uni_on_1[7] = {SERVOMIN, SERVOMIN, pos0, pos0, pos0, SERVOMIN, SERVOMIN};
 
 uint8_t a4 = 8;
 uint8_t b4 = 9;
@@ -118,11 +125,11 @@ void setup() {
   pinMode(btnHour, INPUT);
   pinMode(btnMin, INPUT);
 
-  pwm.begin();
-  pwm.setPWMFreq(60);  // Analog servos run at ~60 Hz updates
+  pwm_min.begin();
+  pwm_min.setPWMFreq(60);  // Analog servos run at ~60 Hz updates
 
-  pwm2.begin();
-  pwm2.setPWMFreq(60);  // Analog servos run at ~60 Hz updates
+  pwm_hora.begin();
+  pwm_hora.setPWMFreq(60);  // Analog servos run at ~60 Hz updates
 
   delay(1000);
   animacion();
@@ -137,6 +144,11 @@ void incrementMinute(int i){
 }
 
 void loop() {
+  //activar_todo();
+  //delay(2000);
+  //desactivar_todo();
+  //delay(2000);
+
   updateClockTime(clockEpoch, timeStart);
   buttonState = digitalRead(btnHour);
   if(buttonState == HIGH){
@@ -161,48 +173,48 @@ void animacion(){
   delay(500);
   barrido();
   delay(200);
-  poner_hora(hora_dec,charh);
+  poner_hora_dec(charh);
   delay(200);
-  poner_hora(hora_uni,char0);
+  poner_hora_uni(char0);
   delay(200);
-  poner_minuto(minuto_dec,charl);
+  poner_minuto_dec(charl);
   delay(200);
-  poner_minuto(minuto_uni,chara);
+  poner_minuto_uni(chara);
   delay(3000);
   }
 
 void barrido(){
-  poner_hora(hora_dec,barr1);
+  poner_hora_dec(barr1);
   delay(200);
-  poner_hora(hora_dec,barr2);
+  poner_hora_dec(barr2);
   delay(200);
-  poner_hora(hora_dec,barr3);
+  poner_hora_dec(barr3);
   delay(200);
-  poner_hora(hora_dec,barr4);
-  poner_hora(hora_uni,barr1);
+  poner_hora_dec(barr4);
+  poner_hora_uni(barr1);
   delay(200);
-  poner_hora(hora_dec,charEmpty);
-  poner_hora(hora_uni,barr2);
+  poner_hora_dec(charEmpty);
+  poner_hora_uni(barr2);
   delay(200);
-  poner_hora(hora_uni,barr3);
+  poner_hora_uni(barr3);
   delay(200);
-  poner_hora(hora_uni,barr4);
-  poner_minuto(minuto_dec,barr1);
+  poner_hora_uni(barr4);
+  poner_minuto_dec(barr1);
   delay(200);
-  poner_hora(hora_uni,charEmpty);
-  poner_minuto(minuto_dec,barr2);
+  poner_hora_uni(charEmpty);
+  poner_minuto_dec(barr2);
   delay(200);
-  poner_minuto(minuto_dec,barr3);
+  poner_minuto_dec(barr3);
   delay(200);
-  poner_minuto(minuto_dec,barr4);
-  poner_minuto(minuto_uni,barr1);
+  poner_minuto_dec(barr4);
+  poner_minuto_uni(barr1);
   delay(200);
-  poner_minuto(minuto_dec,charEmpty);
-  poner_minuto(minuto_uni,barr2);
+  poner_minuto_dec(charEmpty);
+  poner_minuto_uni(barr2);
   delay(200);
-  poner_minuto(minuto_uni,barr3);
+  poner_minuto_uni(barr3);
   delay(200);
-  poner_minuto(minuto_uni,barr4);
+  poner_minuto_uni(barr4);
   delay(200);
   desactivar_todo();
   delay(600);
@@ -212,198 +224,131 @@ void barrido(){
 void barrido_in(){
   desactivar_todo();
   delay(300);
-  poner_hora(hora_dec,barr1);
+  poner_hora_dec(barr1);
   delay(200);
-  poner_hora(hora_dec,barr2);
+  poner_hora_dec(barr2);
   delay(200);
-  poner_hora(hora_dec,char8);
+  poner_hora_dec(char8);
   delay(200);
-  poner_hora(hora_uni,barr1);
+  poner_hora_uni(barr1);
   delay(200);
-  poner_hora(hora_uni,barr2);
+  poner_hora_uni(barr2);
   delay(200);
-  poner_hora(hora_uni,char8);
+  poner_hora_uni(char8);
   delay(200);
-  poner_minuto(minuto_dec,barr1);
+  poner_minuto_dec(barr1);
   delay(200);
-  poner_minuto(minuto_dec,barr2);
+  poner_minuto_dec(barr2);
   delay(200);
-  poner_minuto(minuto_dec,char8);
+  poner_minuto_dec(char8);
   delay(200);
-  poner_minuto(minuto_uni,barr1);
+  poner_minuto_uni(barr1);
   delay(200);
-  poner_minuto(minuto_uni,barr2);
+  poner_minuto_uni(barr2);
   delay(200);
-  poner_minuto(minuto_uni,char8);
+  poner_minuto_uni(char8);
   delay(800);
 }
 
 void barrido_out(){
   activar_todo();
   delay(300);
-  poner_hora(hora_dec,barr3);
+  poner_hora_dec(barr3);
   delay(200);
-  poner_hora(hora_dec,barr4);
+  poner_hora_dec(barr4);
   delay(200);
-  poner_hora(hora_dec,charEmpty);
+  poner_hora_dec(charEmpty);
   delay(200);
-  poner_hora(hora_uni,barr3);
+  poner_hora_uni(barr3);
   delay(200);
-  poner_hora(hora_uni,barr4);
+  poner_hora_uni(barr4);
   delay(200);
-  poner_hora(hora_uni,charEmpty);
+  poner_hora_uni(charEmpty);
   delay(200);
-  poner_minuto(minuto_dec,barr3);
+  poner_minuto_dec(barr3);
   delay(200);
-  poner_minuto(minuto_dec,barr4);
+  poner_minuto_dec(barr4);
   delay(200);
-  poner_minuto(minuto_dec,charEmpty);
+  poner_minuto_dec(charEmpty);
   delay(200);
-  poner_minuto(minuto_uni,barr3);
+  poner_minuto_uni(barr3);
   delay(200);
-  poner_minuto(minuto_uni,barr4);
+  poner_minuto_uni(barr4);
   delay(200);
-  poner_minuto(minuto_uni,charEmpty);
+  poner_minuto_uni(charEmpty);
   delay(800);
 }
 
 void cafe(){
-  poner_hora(hora_dec,charc);
-  poner_hora(hora_uni,chara);
-  poner_minuto(minuto_dec,charf);
-  poner_minuto(minuto_uni,chare);
+  poner_hora_dec(charc);
+  poner_hora_uni(chara);
+  poner_minuto_dec(charf);
+  poner_minuto_uni(chare);
 }
 
 
 void desactivar_todo(){
-  poner_minuto(minuto_dec,charEmpty);
-  poner_minuto(minuto_uni,charEmpty);
-  poner_hora(hora_dec,charEmpty);
-  poner_hora(hora_uni,charEmpty);
+  poner_minuto_dec(charEmpty);
+  poner_minuto_uni(charEmpty);
+  poner_hora_dec(charEmpty);
+  poner_hora_uni(charEmpty);
 }
 
 void activar_todo(){
-  poner_minuto(minuto_dec,char8);
-  poner_minuto(minuto_uni,char8);
-  poner_hora(hora_dec,char8);
-  poner_hora(hora_uni,char8);
+  poner_minuto_dec(char8);
+  poner_minuto_uni(char8);
+  poner_hora_dec(char8);
+  poner_hora_uni(char8);
 }
 
-void poner_minuto(uint8_t cifra[7],char valor[7]){
+void poner_digito(Adafruit_PWMServoDriver pwm, uint8_t cifra[7], char valor[7], int servo_on_0[7], int servo_on_1[7]){
   for (int i=0; i<7; i++){
-    if (i>=2 && i<=4){
-      if (valor[6-i]=='0'){
-        pwm.setPWM(cifra[i], 0, pos270);
-      }
-      else{
-        pwm.setPWM(cifra[i], 0, pos0);
-      }
+    if (valor[6-i]=='0'){
+      pwm.setPWM(cifra[i], 0, servo_on_0[i]);
     }
-    else{
-      if (valor[6-i]=='0'){
-        pwm.setPWM(cifra[i], 0, pos90);
-      }
-      else{
-        pwm.setPWM(cifra[i], 0, SERVOMIN);
-      }
+    else {
+      pwm.setPWM(cifra[i], 0, servo_on_1[i]);
     }
-
   }
 }
 
-void poner_hora(uint8_t cifra[7],char valor[7]){
-  for (int i=0; i<7; i++){
-    if (i>=2 && i<=4){
-      if (valor[6-i]=='0'){
-        pwm2.setPWM(cifra[i], 0, pos270);
-      }
-      else{
-        pwm2.setPWM(cifra[i], 0, pos0);
-      }
-    }
-    else{
-      if (valor[6-i]=='0'){
-        pwm2.setPWM(cifra[i], 0, pos90);
-      }
-      else{
-        pwm2.setPWM(cifra[i], 0, SERVOMIN);
-      }
-    }
-
-  }
+void poner_minuto_dec(char valor[7]){
+    poner_digito(pwm_min, minuto_dec, valor, servos_minuto_dec_on_0, servos_minuto_dec_on_1);
+}
+void poner_minuto_uni(char valor[7]){
+    poner_digito(pwm_min, minuto_uni, valor, servos_minuto_uni_on_0, servos_minuto_uni_on_1);
+}
+void poner_hora_dec(char valor[7]){
+    poner_digito(pwm_hora, hora_dec, valor, servos_hora_dec_on_0, servos_hora_dec_on_1);
+}
+void poner_hora_uni(char valor[7]){
+    poner_digito(pwm_hora, hora_uni, valor, servos_hora_uni_on_0, servos_hora_uni_on_1);
 }
 
-void translate_min(uint8_t cifra[7],int num){
+char * translate_to_char(int num){
   switch (num) {
   case 0:
-    poner_minuto(cifra,char0);
-    break;
+    return char0;
   case 1:
-    poner_minuto(cifra,char1);
-    break;
+    return char1;
   case 2:
-    poner_minuto(cifra,char2);
-    break;
+    return char2;
   case 3:
-    poner_minuto(cifra,char3);
-    break;
+    return char3;
   case 4:
-    poner_minuto(cifra,char4);
-    break;
+    return char4;
   case 5:
-    poner_minuto(cifra,char5);
-    break;
+    return char5;
   case 6:
-    poner_minuto(cifra,char6);
-    break;
+    return char6;
   case 7:
-    poner_minuto(cifra,char7);
-    break;
+    return char7;
   case 8:
-    poner_minuto(cifra,char8);
-    break;
+    return char8;
   case 9:
-    poner_minuto(cifra,char9);
-    break;
+    return char9;
   default:
-    break;
-  }
-}
-
-void translate_hora(uint8_t cifra[7],int num){
-  switch (num) {
-  case 0:
-    poner_hora(cifra,char0);
-    break;
-  case 1:
-    poner_hora(cifra,char1);
-    break;
-  case 2:
-    poner_hora(cifra,char2);
-    break;
-  case 3:
-    poner_hora(cifra,char3);
-    break;
-  case 4:
-    poner_hora(cifra,char4);
-    break;
-  case 5:
-    poner_hora(cifra,char5);
-    break;
-  case 6:
-    poner_hora(cifra,char6);
-    break;
-  case 7:
-    poner_hora(cifra,char7);
-    break;
-  case 8:
-    poner_hora(cifra,char8);
-    break;
-  case 9:
-    poner_hora(cifra,char9);
-    break;
-  default:
-    break;
+    return charEmpty;
   }
 }
 
@@ -416,8 +361,8 @@ void updateClockTime(long clockEpoch, long timeStart){
     int hoursDigits0 = currentHour % 10;
     int hoursDigits1 = (currentHour / 10) % 10;
 
-    translate_min(minuto_uni, minutesDigits0);
-    translate_min(minuto_dec, minutesDigits1);
-    translate_hora(hora_uni, hoursDigits0);
-    translate_hora(hora_dec, hoursDigits1);
+    poner_minuto_dec(translate_to_char(minutesDigits1));
+    poner_minuto_uni(translate_to_char(minutesDigits0));
+    poner_hora_dec(translate_to_char(hoursDigits1));
+    poner_hora_uni(translate_to_char(hoursDigits0));
 }
