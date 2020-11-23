@@ -48,6 +48,7 @@ const char barr2[7] = "1011011";
 const char barr3[7] = "1101101";
 const char barr4[7] = "0100100";
 
+
 // Declaración de cada pieza
 // PCA1 - Horas
 // ----------- Decimales
@@ -112,6 +113,7 @@ bool h12Flag;
 bool pmFlag;
 
 // Botones
+int btnTemp = 8;
 int btnHour = 6;
 int btnMin = 5;
 int buttonState = 0;
@@ -142,12 +144,44 @@ void incrementHour(int i){
 void incrementMinute(int i){
     clock.setMinute((clock.getMinute()+i)%60);
 }
+void cancaneo(){
+  desactivar_todo();
+  delay(2000);
+  for(i = 0; i < 4; i++){
+    delay(190);
+    activar_todo();
+    delay(190);
+    delay(190);
+    delay(190);
+    desactivar_todo();
+    delay(190);
+    activar_todo();
+    delay(190);
+    delay(190);
+    desactivar_todo();
+    delay(190);
+  }
+}
 
 void loop() {
   //activar_todo();
   //delay(2000);
   //desactivar_todo();
   //delay(2000);
+
+  buttonState = digitalRead(btnTemp);
+  //When button is pressed, mark temperature
+  if(buttonState == HIGH){
+    //cancaneo();
+    int temp = clock.getTemperature();
+    int tempUni = temp % 10;
+    int tempDec = (temp / 10) % 10;
+    poner_hora_dec(translate_to_char(tempDec));
+    poner_hora_uni(translate_to_char(tempUni));
+    poner_minuto_dec("0001111");
+    poner_minuto_uni(charc);
+    delay(10000);
+  }
 
   updateClockTime(clockEpoch, timeStart);
   buttonState = digitalRead(btnHour);
