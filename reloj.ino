@@ -2,6 +2,7 @@
 
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
+#include <DS3231.h>
 
 // Este es el PCA principal con default address 0x40
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(0x41, Wire);
@@ -99,8 +100,23 @@ int tiempo2;
 long timeStart;
 long clockEpoch;
 
+DS3231 clock;
+bool h12Flag;
+bool pmFlag;
+
+// Botones
+int btnHour = 6;
+int btnMin = 5;
+int buttonState = 0;
+
 void setup() {
+  clock.setClockMode(false);  // set to 24h
+  Wire.begin();
+
   Serial.begin(9600);
+
+  pinMode(btnHour, INPUT);
+  pinMode(btnMin, INPUT);
 
   pwm.begin();
   pwm.setPWMFreq(60);  // Analog servos run at ~60 Hz updates
@@ -108,43 +124,34 @@ void setup() {
   pwm2.begin();
   pwm2.setPWMFreq(60);  // Analog servos run at ~60 Hz updates
 
-  pinMode(2,INPUT);
-
-  //updateClockTime(clockEpoch, timeStart);
   delay(1000);
-  //tiempo1 = millis();
   animacion();
 }
 
+void incrementHour(int i){
+    clock.setHour((clock.getHour(h12Flag, pmFlag)+i)%24);
+}
+
+void incrementMinute(int i){
+    clock.setMinute((clock.getMinute()+i)%60);
+}
+
 void loop() {
-//   updateClockTime(clockEpoch, timeStart);
-//   long currentTime = getCurrentTime(clockEpoch, timeStart);
+  updateClockTime(clockEpoch, timeStart);
+  buttonState = digitalRead(btnHour);
+  if(buttonState == HIGH){
+    incrementHour(1);
+    delay(500);
+    clock.setSecond(0);
+  }
 
-//   //Note: Maybe make this into a constant
-//   long timeCoffeeStarts = timeToMillis(11, 55); //11:55
-//   long timeCoffeeEnds = timeToMillis(12, 0); //12:00
-
-//   if (currentTime > timeCoffeeStarts && currentTime < timeCoffeeEnds ){
-//   for (int i=0; i<1; i++){
-//     barrido_in();
-//     delay(400);
-//     cafe();
-//     delay(3000);
-//     barrido_out();
-//     delay(1000);
-//     barrido_in();
-
-//     updateClockTime(clockEpoch, timeStart);
-
-//     delay(3000);
-//     barrido_out();
-//     delay(500);
-//   }
-//  }
-
-//  //We get the time again since after running the code some time may have passed
-//  currentTime = getCurrentTime(clockEpoch, timeStart);
-//  delay(60000 - (currentTime % 60000));
+  buttonState = digitalRead(btnMin);
+  if(buttonState == HIGH){
+    incrementMinute(1);
+    delay(500);
+    clock.setSecond(0);
+  }
+  delay(10);
 }
 
 void animacion(){
@@ -400,23 +407,12 @@ void translate_hora(uint8_t cifra[7],int num){
   }
 }
 
-long timeToMillis(long hours, long minutes){
-    return (hours * 3600 + minutes * 60) * 1000;
-}
-
-long getCurrentTime(long clockEpoch, long timeStart){
-    long timePassed = clockEpoch + millis() - timeStart;
-    return timePassed % 86400000; //Amount of milliseconds in a day.
-}
-
 void updateClockTime(long clockEpoch, long timeStart){
-    long currentTime = getCurrentTime(clockEpoch, timeStart);
-
-    int currentMinute = (currentTime / 60000) % 60;
+    int currentMinute = clock.getMinute();
     int minutesDigits0 = currentMinute % 10;
     int minutesDigits1 = (currentMinute / 10) % 10;
 
-    int currentHour = (currentTime / 3600000) % 3600;
+    int currentHour = clock.getHour(h12Flag, pmFlag);
     int hoursDigits0 = currentHour % 10;
     int hoursDigits1 = (currentHour / 10) % 10;
 
